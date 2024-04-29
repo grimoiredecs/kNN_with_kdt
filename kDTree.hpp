@@ -15,9 +15,7 @@ struct kDTreeNode
         this->data = data;
         this->left = left;
         this->right = right;
-        coord = 0;
     }
-    bool coord = 0;
 };
 
 class kDTree
