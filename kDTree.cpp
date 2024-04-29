@@ -134,3 +134,52 @@ int kDTree::leafCount() const
 {
     return leafCountRec(root);
 }
+
+void kDTree::insert(const vector<int> &point)
+{
+    if (root == nullptr || root == NULL || !root)
+    {
+        root = new kDTreeNode(point);
+        cnt++;
+        return;
+    }
+    kDTreeNode *cur = root;
+    int dim = 0;
+    while (true)
+    {
+        if (point[dim] < cur->data[dim])
+        {
+            if (cur->left == nullptr || cur->left == NULL || !cur->left)
+            {
+                cur->left = new kDTreeNode(point);
+                cnt++;
+                return;
+            }
+            cur = cur->left;
+        }
+        else
+        {
+            if (cur->right == nullptr || cur->right == NULL || !cur->right)
+            {
+                cur->right = new kDTreeNode(point);
+                cnt++;
+                return;
+            }
+            cur = cur->right;
+        }
+        dim = (dim + 1) % k;
+    }
+}
+vector<int> kDTree::successor(const kDTreeNode *node)
+{
+}
+
+void kDTree::remove(const vector<int> &point)
+{
+    if (root == nullptr || root == NULL || !root)
+    {
+        return;
+    }
+    kDTreeNode *cur = root;
+    int dim;
+}

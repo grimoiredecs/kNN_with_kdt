@@ -47,6 +47,7 @@ public:
     int leafCount() const;
 
     void insert(const vector<int> &point);
+    vector<int> successor(const kDTreeNode *node);
     void remove(const vector<int> &point);
     bool search(const vector<int> &point);
     void buildTree(const vector<vector<int>> &pointList);
