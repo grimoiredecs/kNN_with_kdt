@@ -51,6 +51,7 @@ public:
 
     void insert(const vector<int> &point);
     vector<int> successor(const kDTreeNode *node);
+    void successorRec(const kDTreeNode *node, vector<int> &successor, const vector<int> &point, int dim);
     void remove(const vector<int> &point);
     bool search(const vector<int> &point);
     void buildTree(const vector<vector<int>> &pointList);

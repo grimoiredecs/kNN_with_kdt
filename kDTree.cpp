@@ -203,14 +203,14 @@ void kDTree::remove(const vector<int> &point)
         return;
     }
     kDTreeNode *cur = root;
-    int dim;
+    int dim = 1;
     while (true)
     {
         if (point[dim] < cur->data[dim])
         {
             if (cur->left == nullptr || cur->left == NULL || !cur->left)
             {
-                return;
+                break;
             }
             cur = cur->left;
         }
@@ -218,36 +218,41 @@ void kDTree::remove(const vector<int> &point)
         {
             if (cur->right == nullptr || cur->right == NULL || !cur->right)
             {
-                return;
+                break;
             }
             cur = cur->right;
         }
         dim = (dim + 1) % k;
     }
-
-    if (cur->left == nullptr && cur->right == nullptr)
+    if (cur == nullptr || cur == NULL || !cur)
     {
-        delete cur;
         return;
     }
-    else if (cur->right != nullptr)
-    {
-        kDTreeNode *successor = cur->right;
-        while (successor->left != nullptr)
-        {
-            successor = successor->left;
-        }
-        cur->data = successor->data;
-        delete successor;
-    }
+
     else
     {
-        kDTreeNode *predecessor = cur->left;
-        while (predecessor->right != nullptr)
+        if (cur->left == nullptr && cur->right == nullptr)
         {
-            predecessor = predecessor->right;
+            delete cur;
+            cnt--;
+            return;
         }
-        cur->data = predecessor->data;
-        delete predecessor;
+        else if (cur->right != nullptr || cur->right != NULL || cur->right)
+        {
+            kDTreeNode *tmp = cur->right;
+            int dim2 = dim;
+            while (tmp->left != nullptr && tmp->left != NULL && tmp->left)
+            {
+                tmp = tmp->left;
+                dim2 = (dim2 + 1) % k;
+            }
+            cur->data = tmp->data;
+            delete tmp;
+            cnt--;
+            return;
+        }
+        else
+        {
+                }
     }
 }
