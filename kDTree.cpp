@@ -22,6 +22,7 @@ kDTree::~kDTree()
 {
     clear(root);
 }
+
 // overload operator =
 const kDTree &kDTree::operator=(const kDTree &other)
 {
@@ -39,6 +40,27 @@ kDTree::kDTree(const kDTree &other)
 {
     k = other.k;
     root = other.root;
+}
+inline int kDTree::lvlRec(const kDTreeNode *node, const kDTreeNode *cur, int level)
+{
+    if (node == nullptr || node == NULL || !node)
+    {
+        return -1;
+    }
+    if (node == cur)
+    {
+        return level;
+    }
+    int left = lvlRec(node->left, cur, level + 1);
+    if (left != 0)
+    {
+        return left;
+    }
+    return lvlRec(node->right, cur, level + 1);
+}
+inline int kDTree::lvl(kDTreeNode *node)
+{
+    return lvlRec(root, node, 0);
 }
 
 void kDTree::inorderRec(kDTreeNode *node) const
@@ -182,4 +204,50 @@ void kDTree::remove(const vector<int> &point)
     }
     kDTreeNode *cur = root;
     int dim;
+    while (true)
+    {
+        if (point[dim] < cur->data[dim])
+        {
+            if (cur->left == nullptr || cur->left == NULL || !cur->left)
+            {
+                return;
+            }
+            cur = cur->left;
+        }
+        else
+        {
+            if (cur->right == nullptr || cur->right == NULL || !cur->right)
+            {
+                return;
+            }
+            cur = cur->right;
+        }
+        dim = (dim + 1) % k;
+    }
+
+    if (cur->left == nullptr && cur->right == nullptr)
+    {
+        delete cur;
+        return;
+    }
+    else if (cur->right != nullptr)
+    {
+        kDTreeNode *successor = cur->right;
+        while (successor->left != nullptr)
+        {
+            successor = successor->left;
+        }
+        cur->data = successor->data;
+        delete successor;
+    }
+    else
+    {
+        kDTreeNode *predecessor = cur->left;
+        while (predecessor->right != nullptr)
+        {
+            predecessor = predecessor->right;
+        }
+        cur->data = predecessor->data;
+        delete predecessor;
+    }
 }

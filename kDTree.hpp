@@ -9,6 +9,7 @@ struct kDTreeNode
 {
     vector<int> data;
     kDTreeNode *left;
+
     kDTreeNode *right;
     kDTreeNode(vector<int> data, kDTreeNode *left = nullptr, kDTreeNode *right = nullptr)
     {
@@ -30,6 +31,8 @@ public:
     ~kDTree();
     void mergesort(vector<vector<int>> &pointList, int l, int r, int dim);
     kDTreeNode *findMedian(vector<vector<int>> &pointList, int l, int r, int dim);
+    inline int lvlRec(const kDTreeNode *node, const kDTreeNode *cur, int level);
+    inline int lvl(kDTreeNode *node);
     const kDTree &operator=(const kDTree &other);
     kDTree(const kDTree &other);
     void clear(kDTreeNode *node);
