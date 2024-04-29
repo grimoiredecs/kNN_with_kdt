@@ -33,9 +33,12 @@ public:
     kDTreeNode *findMedian(vector<vector<int>> &pointList, int l, int r, int dim);
     const kDTree &operator=(const kDTree &other);
     kDTree(const kDTree &other);
-
+    void clear(kDTreeNode *node);
+    void inorderRec(kDTreeNode *node) const;
     void inorderTraversal() const;
+    void preorderRec(kDTreeNode *node) const;
     void preorderTraversal() const;
+    void postorderRec(kDTreeNode *node) const;
     void postorderTraversal() const;
     int height() const;
     int nodeCount() const;

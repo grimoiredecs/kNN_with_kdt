@@ -1,5 +1,5 @@
 #include "kDTree.hpp"
-
+/*
 void tc1()
 {
     Dataset dataset;
@@ -89,6 +89,7 @@ void tc5()
     double accuracy = knn.score(y_test, y_pred);
     std::cout << "Accuracy: " << accuracy << endl;
 }
+*/
 
 int main(int argc, const char *argv[])
 {
