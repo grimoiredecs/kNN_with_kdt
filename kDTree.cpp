@@ -6,6 +6,7 @@ kDTree::kDTree(int k)
 {
     this->k = k;
     root = nullptr;
+    cnt = 0;
 }
 void kDTree::clear(kDTreeNode *node)
 {
@@ -97,4 +98,39 @@ void kDTree::postorderRec(kDTreeNode *node) const
 void kDTree::postorderTraversal() const
 {
     postorderRec(root);
+}
+
+int kDTree::heightRec(kDTreeNode *node) const
+{
+    if (node == nullptr || node == NULL || !node)
+    {
+        return 0;
+    }
+    int leftHeight = heightRec(node->left);
+    int rightHeight = heightRec(node->right);
+    return 1 + max(leftHeight, rightHeight);
+}
+int kDTree::height() const
+{
+    return heightRec(root);
+}
+int kDTree::nodeCount() const
+{
+    return this->cnt;
+}
+int kDTree::leafCountRec(kDTreeNode *node) const
+{
+    if (node == nullptr || node == NULL || !node)
+    {
+        return 0;
+    }
+    if (node->left == nullptr && node->right == nullptr)
+    {
+        return 1;
+    }
+    return leafCountRec(node->left) + leafCountRec(node->right);
+}
+int kDTree::leafCount() const
+{
+    return leafCountRec(root);
 }

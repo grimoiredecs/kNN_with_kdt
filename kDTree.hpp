@@ -25,6 +25,7 @@ class kDTree
 private:
     int k;
     kDTreeNode *root;
+    int cnt;
 
 public:
     kDTree(int k = 2);
@@ -40,8 +41,11 @@ public:
     void preorderTraversal() const;
     void postorderRec(kDTreeNode *node) const;
     void postorderTraversal() const;
+    int heightRec(kDTreeNode *node) const;
     int height() const;
+    int nodeCountRec(kDTreeNode *node) const;
     int nodeCount() const;
+    int leafCountRec(kDTreeNode *node) const;
     int leafCount() const;
 
     void insert(const vector<int> &point);
