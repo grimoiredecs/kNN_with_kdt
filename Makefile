@@ -1,7 +1,18 @@
-all: main
+CC = clang++
+CFLAGS = -std=c++11 -I.
 
-main: main.cpp kDTree.cpp Dataset.o
-    clang++ -o main main.cpp kDTree.cpp Dataset.o -I . -std=c++11
+SRCS = main.cpp kDTree.cpp
+OBJS = $(SRCS:.cpp=.o)
+
+EXEC = main
+
+all: $(EXEC)
+
+$(EXEC): $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS)
+
+%.o: %.cpp
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 clean:
-    rm -f main
+	rm -f $(OBJS) $(EXEC)
