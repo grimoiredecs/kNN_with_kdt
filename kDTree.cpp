@@ -362,6 +362,31 @@ inline double kDTree::distance(const vector<int> &a, const vector<int> &b)
     }
     return static_cast<double>(res);
 }
+// dfs
+
+kDTreeNode *kDTree::neighborSearch(kDTreeNode *root, const vector<int> &target, kDTreeNode *best, int depth)
+{
+    if (root == nullptr)
+    {
+        return nullptr;
+    }
+
+    int dim = depth % k;
+    kDTreeNode *tmp = root;
+    double dist = distance(tmp->data, target);
+    pair<double, kDTreeNode *> cur = {dist, tmp};
+    if (tmp->data[dim] <= target[dim] && tmp->right != nullptr)
+    {
+        tmp = neighborSearch(tmp->right, target, best, depth + 1);
+    }
+    else if (tmp->data[dim] > target[dim] && tmp->left != nullptr)
+    {
+        tmp = neighborSearch(tmp->left, target, best, depth + 1);
+    }
+    else
+    {
+        }
+}
 
 void kDTree::nearestNeighbour(const vector<int> &target, kDTreeNode *best)
 {
