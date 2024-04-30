@@ -29,7 +29,6 @@ private:
 public:
     kDTree(int k = 2);
     ~kDTree();
-    void mergesort(vector<vector<int>> &pointList, int l, int r, int dim);
     kDTreeNode *findMedian(vector<vector<int>> &pointList, int l, int r, int dim);
     inline int lvlRec(const kDTreeNode *node, const kDTreeNode *cur, int level);
     inline int lvl(kDTreeNode *node);
@@ -51,12 +50,17 @@ public:
 
     void insert(const vector<int> &point);
     vector<int> successor(const kDTreeNode *node);
-    void successorRec(const kDTreeNode *node, vector<int> &successor, const vector<int> &point, int dim);
+    kDTreeNode *removeRec(kDTreeNode *node, const vector<int> &point, int depth);
     void remove(const vector<int> &point);
+    kDTreeNode *findMin(kDTreeNode *node, int dim, int depth);
     bool search(const vector<int> &point);
+    vector<vector<int>> mergesort(const vector<vector<int>> &pointList, int l, int r, int dim);
     void buildTree(const vector<vector<int>> &pointList);
     void nearestNeighbour(const vector<int> &target, kDTreeNode *best);
     void kNearestNeighbour(const vector<int> &target, int k, vector<kDTreeNode *> &bestList);
+    kDTreeNode *buildTreeRec(const vector<vector<int>> &pointList, int l, int r, int depth);
+    inline double distance(const vector<int> &a, const vector<int> &b);
+    inline void traversed(kDTreeNode *root, int k);
 };
 
 class kNN
