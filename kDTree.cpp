@@ -364,10 +364,10 @@ inline double kDTree::distance(const vector<int> &a, const vector<int> &b)
 }
 // dfs
 
-kDTreeNode *kDTree::neighborSearch(kDTreeNode *root, const vector<int> &target, kDTreeNode *best, int depth)
+kDTreeNode *kDTree::neighborSearch(kDTreeNode *root, const vector<int> &target, int depth)
 {
 
-    int dim = depth % k;
+    int dim = depth % this->k;
     kDTreeNode *tmp = root;
     kDTreeNode *min = root;
     bool flag = false;
@@ -378,12 +378,12 @@ kDTreeNode *kDTree::neighborSearch(kDTreeNode *root, const vector<int> &target, 
     if (root->left != nullptr && root->data[dim] > target[dim])
     {
         flag = true;
-        min = neighborSearch(root->left, target, best, depth + 1);
+        min = neighborSearch(root->left, target, depth + 1);
     }
     else if (root->right != nullptr && root->data[dim] <= target[dim])
     {
         flag = false;
-        min = neighborSearch(root->right, target, best, depth + 1);
+        min = neighborSearch(root->right, target, depth + 1);
     }
     else
     {
@@ -396,21 +396,24 @@ kDTreeNode *kDTree::neighborSearch(kDTreeNode *root, const vector<int> &target, 
         {
             min = root;
             mindis = rootdis;
-            if (r <= rootdis)
+        }
+        if (r <= rootdis)
+        {
+            if (root->left != nullptr && flag == true)
             {
-                if (root->left != nullptr)
-                {
-                    min = neighborSearch(root->left, target, best, depth + 1);
-                }
-                if (root->right != nullptr)
-                {
-                    min = neighborSearch(root->right, target, best, depth + 1);
-                }
+                min = neighborSearch(root->left, target, depth + 1);
+            }
+            if (root->right != nullptr && flag == false)
+            {
+                min = neighborSearch(root->right, target, depth + 1);
             }
         }
+        return min;
     }
 }
 
 void kDTree::nearestNeighbour(const vector<int> &target, kDTreeNode *best)
 {
+    best = neighborSearch(root, target, 0);
+    return;
 }

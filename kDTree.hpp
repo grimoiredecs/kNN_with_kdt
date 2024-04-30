@@ -61,7 +61,7 @@ public:
     kDTreeNode *buildTreeRec(const vector<vector<int>> &pointList, int l, int r, int depth);
     inline double distance(const vector<int> &a, const vector<int> &b);
     inline void traversed(kDTreeNode *root, int k);
-    kDTreeNode *neighborSearch(kDTreeNode *root, const vector<int> &target, kDTreeNode *best, int depth);
+    kDTreeNode *neighborSearch(kDTreeNode *root, const vector<int> &target, int depth);
     friend class Heap;
 };
 
