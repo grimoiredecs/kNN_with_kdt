@@ -369,6 +369,46 @@ kDTreeNode *kDTree::neighborSearch(kDTreeNode *root, const vector<int> &target, 
 
     int dim = depth % k;
     kDTreeNode *tmp = root;
+    kDTreeNode *min = root;
+    bool flag = false;
+    if (root->left == nullptr && root->right == nullptr)
+    {
+        return root;
+    }
+    if (root->left != nullptr && root->data[dim] > target[dim])
+    {
+        flag = true;
+        min = neighborSearch(root->left, target, best, depth + 1);
+    }
+    else if (root->right != nullptr && root->data[dim] <= target[dim])
+    {
+        flag = false;
+        min = neighborSearch(root->right, target, best, depth + 1);
+    }
+    else
+    {
+        double mindis = distance(min->data, target);
+        double rootdis = distance(root->data, target);
+        double r = 0;
+        r = (root->data[dim] - target[dim]);
+
+        if (rootdis < mindis)
+        {
+            min = root;
+            mindis = rootdis;
+            if (r <= rootdis)
+            {
+                if (root->left != nullptr)
+                {
+                    min = neighborSearch(root->left, target, best, depth + 1);
+                }
+                if (root->right != nullptr)
+                {
+                    min = neighborSearch(root->right, target, best, depth + 1);
+                }
+            }
+        }
+    }
 }
 
 void kDTree::nearestNeighbour(const vector<int> &target, kDTreeNode *best)
