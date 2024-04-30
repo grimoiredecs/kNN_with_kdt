@@ -417,3 +417,101 @@ void kDTree::nearestNeighbour(const vector<int> &target, kDTreeNode *best)
     best = neighborSearch(root, target, 0);
     return;
 }
+template <class T>
+Heap<T>::Heap()
+{
+}
+template <class T>
+Heap<T>::~Heap()
+{
+}
+
+template <class T>
+void Heap<T>::push(T item)
+{
+    heap.push_back(item);
+    int i = heap.size() - 1;
+    int parent = (i - 1) / 2;
+    while (i > 0 && heap[parent] < heap[i])
+    {
+        swap(heap[i], heap[parent]);
+        i = parent;
+        parent = (i - 1) / 2;
+    }
+}
+template <class T>
+bool Heap<T>::isEmpty()
+{
+    return elements.size() == 0;
+}
+template <class T>
+int Heap<T>::size()
+{
+    return elements.size();
+}
+template <class T>
+bool Heap<T>::contains(T item)
+{
+    for (auto ele : elements)
+    {
+        if (ele == item)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+template <class T>
+T Heap<T>::peek()
+{
+    if (isEmpty())
+    {
+        return NULL;
+    }
+    return elements[0];
+}
+template <class T>
+bool Heap<T>::pop()
+{
+    if (isEmpty())
+    {
+        return false;
+    }
+    swap(elements[0], elements[elements.size() - 1]);
+    elements.pop_back();
+    int i = 0;
+    while (true)
+    {
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        int largest = i;
+        if (left < elements.size() && elements[left] > elements[largest])
+        {
+            largest = left;
+        }
+        if (right < elements.size() && elements[right] > elements[largest])
+        {
+            largest = right;
+        }
+        if (largest == i)
+        {
+            break;
+        }
+        swap(elements[i], elements[largest]);
+        i = largest;
+    }
+    return true;
+}
+// Explicit instantiation
+
+template <class T>
+void Heap<T>::reheapUp(int position)
+{
+    int parent = (position - 1) / 2;
+    while (position > 0 && heap[parent] < heap[position])
+    {
+        swap(heap[position], heap[parent]);
+        position = parent;
+        parent = (position - 1) / 2;
+    }
+}

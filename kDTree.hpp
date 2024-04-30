@@ -65,8 +65,28 @@ public:
     friend class Heap;
 };
 
+template <class T>
 class Heap
 {
+protected:
+    vector<T> elements;
+
+public:
+    Heap() {}
+    ~Heap() {}
+
+    void push(T item);
+    bool isEmpty();
+    bool contains(T item);
+    T peek();
+    bool pop();
+    int size();
+
+private:
+    void reheapUp(int position);
+    void reheapDown(int position);
+    void reheapDown(vector<T> &minHeap, int numberOfElements, int index);
+    void reheapUp(vector<T> &minHeap, int numberOfElements, int index);
 };
 class kNN
 {
