@@ -515,3 +515,59 @@ void Heap<T>::reheapUp(int position)
         parent = (position - 1) / 2;
     }
 }
+
+template <class T>
+void Heap<T>::reheapUp(vector<T> &minHeap, int numberOfElements, int index)
+{
+    int parent = (index - 1) / 2;
+    while (index > 0 && minHeap[parent] > minHeap[index])
+    {
+        swap(minHeap[parent], minHeap[index]);
+        index = parent;
+        parent = (index - 1) / 2;
+    }
+}
+
+template <class T>
+void Heap<T>::reheapDown(int position)
+{
+    int left = 2 * position + 1;
+    int right = 2 * position + 2;
+    int largest = position;
+    if (left < heap.size() && heap[left] > heap[largest])
+    {
+        largest = left;
+    }
+    if (right < heap.size() && heap[right] > heap[largest])
+    {
+        largest = right;
+    }
+    if (largest == position)
+    {
+        return;
+    }
+    swap(heap[position], heap[largest]);
+    reheapDown(largest);
+}
+
+template <class T>
+void Heap<T>::reheapDown(vector<T> &minHeap, int numberOfElements, int index)
+{
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
+    int smallest = index;
+    if (left < numberOfElements && minHeap[left] < minHeap[smallest])
+    {
+        smallest = left;
+    }
+    if (right < numberOfElements && minHeap[right] < minHeap[smallest])
+    {
+        smallest = right;
+    }
+    if (smallest == index)
+    {
+        return;
+    }
+    swap(minHeap[index], minHeap[smallest]);
+    reheapDown(minHeap, numberOfElements, smallest);
+}
