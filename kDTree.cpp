@@ -293,56 +293,51 @@ bool kDTree::search(const vector<int> &point)
     }
     return false;
 }
-vector<vector<int>> kDTree::mergesort(const vector<vector<int>> &pointList, int l, int r, int dim)
+void kDTree::mergesort(vector<vector<int>> &point, int dim)
 {
-    vector<vector<int>> res;
-    if (l > r)
-        return res;
-    if (l == r)
+    vector<vector<int>> res(point.size(), vector<int>(k));
+    mergesort(point, res, 0, point.size() - 1, dim);
+    point = res;
+}
+void kDTree::mergesort(vector<vector<int>> &point, vector<vector<int>> &res, int l, int r, int dim)
+{
+    if (l >= r)
     {
-        res.push_back(pointList[l]);
-        return res;
+        return;
     }
     int mid = (l + r) / 2;
-    vector<vector<int>> left = mergesort(pointList, l, mid, dim);
-    vector<vector<int>> right = mergesort(pointList, mid + 1, r, dim);
-    int i = 0, j = 0;
-    while (i < left.size() && j < right.size())
-    {
-        if (left[i][dim] < right[j][dim])
-        {
-            res.push_back(left[i]);
-            i++;
-        }
-        else
-        {
-            res.push_back(right[j]);
-            j++;
-        }
-    }
-    while (i < left.size())
-    {
-        res.push_back(left[i]);
-        i++;
-    }
-    while (j < right.size())
-    {
-        res.push_back(right[j]);
-        j++;
-    }
-    return res;
+    mergesort(point, res, l, mid, dim);
+    mergesort(point, res, mid + 1, r, dim);
+    merge(point, res, l, mid, r, dim);
 }
+void kDTree::merge(vector<vector<int>> &point, vector<vector<int>> &res, int l, int mid, int r, int dim)
+{
 
+    int lend = mid - 1;
+    int tmp = l;
+    int num = r - l + 1;
+    while (l <= lend && mid <= r)
+        if (point[l][dim] < point[mid][dim])
+            res[tmp++] = std::move(point[l++]);
+        else
+            res[tmp++] = std::move(point[mid++]);
+    while (l <= lend)
+        res[tmp++] = std::move(point[l++]);
+    while (mid <= r)
+        res[tmp++] = std::move(point[mid++]);
+    for (int i = 0; i < num; i++, --r)
+        point[r] = std::move(res[r]);
+}
 kDTreeNode *kDTree::buildTreeRec(const vector<vector<int>> &points, int depth, int start, int end)
 {
-    if (start > end)
+    if (start == end)
     {
-        return nullptr;
+        return new kDTreeNode(points[start]);
     }
-    int dim = depth % k;
-    vector<vector<int>> sorted = mergesort(points, start, end, dim);
-    int median = (start + end) / 2;
-    kDTreeNode *node = new kDTreeNode(sorted[median]);
+    vector<vector<int>> point(points.begin() + start, points.begin() + end + 1);
+    mergesort(point, depth % k);
+    int median = ceil((start + end) / 2);
+    kDTreeNode *node = new kDTreeNode(point[median]);
     node->left = buildTreeRec(points, depth + 1, start, median - 1);
     node->right = buildTreeRec(points, depth + 1, median + 1, end);
     return node;
@@ -425,16 +420,16 @@ template <class T>
 Heap<T>::~Heap()
 {
 }
-
+/**/
 template <class T>
 void Heap<T>::push(T item)
 {
-    heap.push_back(item);
-    int i = heap.size() - 1;
+    elements.push_back(item);
+    int i = elements.size() - 1;
     int parent = (i - 1) / 2;
-    while (i > 0 && heap[parent] < heap[i])
+    while (i > 0 && elements[parent] < elements[i])
     {
-        swap(heap[i], heap[parent]);
+        swap(elements[i], elements[parent]);
         i = parent;
         parent = (i - 1) / 2;
     }
@@ -570,4 +565,18 @@ void Heap<T>::reheapDown(vector<T> &minHeap, int numberOfElements, int index)
     }
     swap(minHeap[index], minHeap[smallest]);
     reheapDown(minHeap, numberOfElements, smallest);
+}
+
+kNN::kNN(int k)
+{
+    this->k = k;
+    this->tree = new kDTree();
+}
+kNN::~kNN()
+{
+    delete tree;
+}
+
+void kNN::fit(Dataset &X, Dataset &y)
+{
 }

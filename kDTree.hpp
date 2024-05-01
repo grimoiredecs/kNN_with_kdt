@@ -54,7 +54,9 @@ public:
     void remove(const vector<int> &point);
     kDTreeNode *findMin(kDTreeNode *node, int dim, int depth);
     bool search(const vector<int> &point);
-    vector<vector<int>> mergesort(const vector<vector<int>> &pointList, int l, int r, int dim);
+    void mergesort(vector<vector<int>> &point, int dim);
+    void mergesort(vector<vector<int>> &point, vector<vector<int>> &res, int l, int r, int dim);
+    inline void merge(vector<vector<int>> &point, vector<vector<int>> &res, int l, int mid, int r, int dim);
     void buildTree(const vector<vector<int>> &pointList);
     void nearestNeighbour(const vector<int> &target, kDTreeNode *best);
     void kNearestNeighbour(const vector<int> &target, int k, vector<kDTreeNode *> &bestList);
@@ -62,7 +64,6 @@ public:
     inline double distance(const vector<int> &a, const vector<int> &b);
     inline void traversed(kDTreeNode *root, int k);
     kDTreeNode *neighborSearch(kDTreeNode *root, const vector<int> &target, int depth);
-    friend class Heap;
 };
 
 template <class T>
