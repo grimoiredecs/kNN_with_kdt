@@ -27,17 +27,7 @@ kDTree::~kDTree()
 }
 
 // overload operator =
-const kDTree &kDTree::operator=(const kDTree &other)
-{
-    if (this == &other)
-    {
-        return *this;
-    }
-    clear(root);
-    k = other.k;
-    root = other.root;
-    return *this;
-}
+
 // copy constructor
 kDTree::kDTree(const kDTree &other)
 {
@@ -68,17 +58,19 @@ inline int kDTree::lvl(kDTreeNode *node)
 
 void kDTree::inorderRec(kDTreeNode *node) const
 {
-    if (node == nullptr || node == NULL || !node)
+    if (node == nullptr)
     {
         return;
     }
     inorderRec(node->left);
+    cout << node->data[0];
 
-    cout << this->root->data[0];
-    for (int i = 0; i < this->root->data.size() - 3; i++)
+    for (int i = 1; i < node->data.size() - 1; i++)
     {
-        cout << " " << this->root->data[i];
+        cout << " " << node->data[i];
     }
+    cout << endl;
+
     inorderRec(node->right);
 }
 void kDTree::inorderTraversal() const
@@ -292,57 +284,95 @@ bool kDTree::search(const vector<int> &point)
         {
             cur = cur->right;
         }
-        dim = (dim + 1) % k;
+        dim = (dim + 1) % (k - 1);
     }
     return false;
 }
-void kDTree::mergesort(vector<vector<int>> &point, int dim)
+void kDTree::merge(vector<vector<int>> &points, vector<vector<int>> &temp, int leftStart, int mid, int rightEnd, int dim)
 {
-    vector<vector<int>> res(point.size(), vector<int>(k));
-    mergesort(point, res, 0, point.size() - 1, dim);
-    point = res;
+    int i = leftStart;
+    int j = mid + 1;
+    int k = leftStart;
+
+    while (i <= mid && j <= rightEnd)
+    {
+        if (points[i][dim] <= points[j][dim])
+        {
+            temp[k] = points[i];
+            i++;
+        }
+        else
+        {
+            temp[k] = points[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i <= mid)
+    {
+        temp[k] = points[i];
+        i++;
+        k++;
+    }
+
+    while (j <= rightEnd)
+    {
+        temp[k] = points[j];
+        j++;
+        k++;
+    }
+
+    for (i = leftStart; i <= rightEnd; i++)
+    {
+        points[i] = temp[i];
+    }
 }
-void kDTree::mergesort(vector<vector<int>> &point, vector<vector<int>> &res, int l, int r, int dim)
+
+void kDTree::mergeSort(vector<vector<int>> &points, vector<vector<int>> &temp, int leftStart, int rightEnd, int dim)
 {
-    if (l >= r)
+    if (leftStart >= rightEnd)
     {
         return;
     }
-    int mid = (l + r) / 2;
-    mergesort(point, res, l, mid, dim);
-    mergesort(point, res, mid + 1, r, dim);
-    merge(point, res, l, mid, r, dim);
-}
-void kDTree::merge(vector<vector<int>> &point, vector<vector<int>> &res, int l, int mid, int r, int dim)
-{
 
-    int lend = mid - 1;
-    int tmp = l;
-    int num = r - l + 1;
-    while (l <= lend && mid <= r)
-        if (point[l][dim] < point[mid][dim])
-            res[tmp++] = std::move(point[l++]);
-        else
-            res[tmp++] = std::move(point[mid++]);
-    while (l <= lend)
-        res[tmp++] = std::move(point[l++]);
-    while (mid <= r)
-        res[tmp++] = std::move(point[mid++]);
-    for (int i = 0; i < num; i++, --r)
-        point[r] = std::move(res[r]);
+    int mid = leftStart + (rightEnd - leftStart) / 2;
+    mergeSort(points, temp, leftStart, mid, dim);
+    mergeSort(points, temp, mid + 1, rightEnd, dim);
+    merge(points, temp, leftStart, mid, rightEnd, dim);
 }
+
 kDTreeNode *kDTree::buildTreeRec(const vector<vector<int>> &points, int depth, int start, int end)
 {
-    if (start >= end)
+
+    if (start > end)
+    {
+        return nullptr;
+    }
+    int actual = depth % (this->k);
+    if (points.size() == 1 || start == end)
+    {
+        return new kDTreeNode(points[start]);
+    }
+    if (points.size() == 0)
     {
         return nullptr;
     }
     vector<vector<int>> point(points.begin() + start, points.begin() + end + 1);
-    mergesort(point, depth % k);
-    int median = ceil((start + end) / 2);
-    kDTreeNode *node = new kDTreeNode(point[median]);
-    node->left = buildTreeRec(points, depth + 1, start, median - 1);
-    node->right = buildTreeRec(points, depth + 1, median + 1, end);
+    vector<vector<int>> temp = point;
+    mergeSort(point, temp, 0, point.size() - 1, actual);
+    int median = (start + end) / 2; // out of bound
+    if (start != 0)
+    {
+        median -= start;
+    }
+    kDTreeNode *node = new kDTreeNode(point[median]); /// it breaks here
+    start = 0;
+    end = point.size() - 1;
+    median = (start + end) / 2;
+    node->left = buildTreeRec(point, depth + 1, start, median - 1);
+    node->right = buildTreeRec(point, depth + 1, median + 1, end);
+
     return node;
 }
 
@@ -350,6 +380,7 @@ void kDTree::buildTree(const vector<vector<int>> &points)
 {
     root = buildTreeRec(points, 0, 0, points.size() - 1);
 }
+
 inline double kDTree::distance(const vector<int> &a, const vector<int> &b)
 {
     double res = 0;
@@ -361,100 +392,13 @@ inline double kDTree::distance(const vector<int> &a, const vector<int> &b)
 }
 // dfs
 
-kDTreeNode *kDTree::neighborSearch(kDTreeNode *root, const vector<int> &target, int depth)
-{
-
-    int dim = depth % this->k;
-    kDTreeNode *tmp = root;
-    kDTreeNode *min = root;
-    bool flag = false;
-    if (root->left == nullptr && root->right == nullptr)
-    {
-        return root;
-    }
-    if (root->left != nullptr && root->data[dim] > target[dim])
-    {
-        flag = true;
-        min = neighborSearch(root->left, target, depth + 1);
-    }
-    else if (root->right != nullptr && root->data[dim] <= target[dim])
-    {
-        flag = false;
-        min = neighborSearch(root->right, target, depth + 1);
-    }
-    else
-    {
-        double mindis = distance(min->data, target);
-        double rootdis = distance(root->data, target);
-        double r = 0;
-        r = (root->data[dim] - target[dim]);
-
-        if (rootdis < mindis)
-        {
-            min = root;
-            mindis = rootdis;
-        }
-        if (r <= rootdis)
-        {
-            if (root->left != nullptr && flag == true)
-            {
-                min = neighborSearch(root->left, target, depth + 1);
-            }
-            if (root->right != nullptr && flag == false)
-            {
-                min = neighborSearch(root->right, target, depth + 1);
-            }
-        }
-        return min;
-    }
-}
-
-void kDTree::nearestNeighbour(const vector<int> &target, kDTreeNode *best)
-{
-    best = neighborSearch(root, target, 0);
-    return;
-}
-
-inline void merge(vector<vector<int>> &point, vector<vector<int>> &res, int l, int mid, int r, int dim)
-{
-
-    int lend = mid - 1;
-    int tmp = l;
-    int num = r - l + 1;
-    while (l <= lend && mid <= r)
-        if (point[l][dim] < point[mid][dim])
-            res[tmp++] = std::move(point[l++]);
-        else
-            res[tmp++] = std::move(point[mid++]);
-    while (l <= lend)
-        res[tmp++] = std::move(point[l++]);
-    while (mid <= r)
-        res[tmp++] = std::move(point[mid++]);
-    for (int i = 0; i < num; i++, --r)
-        point[r] = std::move(res[r]);
-}
-
-void mergesort(vector<vector<int>> &point, vector<vector<int>> &res, int l, int r, int dim)
-{
-    if (l < r)
-    {
-        int mid = l + (r - l) / 2;
-        mergesort(point, res, l, mid, dim);
-        mergesort(point, res, mid + 1, r, dim);
-        merge(point, res, l, mid + 1, r, dim); // Fixed the argument list for the merge function
-    }
-}
-void mergesort(vector<vector<int>> &point)
-{
-    vector<vector<int>> res(point.size(), vector<int>(2, 0));
-    mergesort(point, res, 0, point.size() - 1, 0);
-}
 void inorderRec(kDTreeNode *root)
 {
     if (root == nullptr)
     {
         return;
     }
+
     inorderRec(root->left);
     for (int i = 0; i < root->data.size() - 2; i++)
     {
@@ -463,14 +407,58 @@ void inorderRec(kDTreeNode *root)
     inorderRec(root->right);
 }
 
+// dfs
+
+kDTreeNode *kDTree::nearestNeighborRec(kDTreeNode *node, const vector<int> &queryPoint, int depth)
+{
+    if (node == nullptr)
+    {
+        return nullptr;
+    }
+
+    double dist = distance(queryPoint, node->data);
+    double diff = queryPoint[depth % k] - node->data[depth % k];
+    kDTreeNode *near = diff <= 0 ? node->left : node->right;
+    kDTreeNode *far = diff <= 0 ? node->right : node->left;
+
+    kDTreeNode *nearest = nearestNeighborRec(near, queryPoint, depth + 1);
+    if (nearest == nullptr || dist < distance(queryPoint, nearest->data))
+    {
+        nearest = node;
+    }
+
+    if (abs(diff) < distance(queryPoint, nearest->data))
+    {
+        kDTreeNode *temp = nearestNeighborRec(far, queryPoint, depth + 1);
+        if (temp != nullptr && distance(queryPoint, temp->data) < distance(queryPoint, nearest->data))
+        {
+            nearest = temp;
+        }
+    }
+
+    return nearest;
+}
+
+void kDTree::nearestNeighbour(const vector<int> &target, kDTreeNode *&best)
+{
+    best = nearestNeighborRec(root, target, 0);
+    cout << "Hello WOrld";
+    return;
+}
+
 int main()
 {
 
     /// fix the merge function
-    kDTree tree; //(5, 6), (2, 2), (7, 3), (2, 8), (8, 7), (8, 1), (9, 4), (3, 5)
+    kDTree tree(2); //(5, 6), (2, 2), (7, 3), (2, 8), (8, 7), (8, 1), (9, 4), (3, 5) 8 elemetns
     vector<vector<int>> points = {{5, 6}, {2, 2}, {7, 3}, {2, 8}, {8, 7}, {8, 1}, {9, 4}, {3, 5}};
+    kDTreeNode *best = nullptr;
     tree.buildTree(points);
-    tree.inorderTraversal();
+    //   tree.inorderTraversal();
 
+    tree.inorderTraversal();
+    tree.nearestNeighbour({9, 3}, best);
+
+    //  cout << best->data[0] << " " << best->data[1] << endl;
     return 0;
 }
