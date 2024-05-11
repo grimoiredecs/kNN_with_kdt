@@ -23,17 +23,29 @@ kDTree::~kDTree()
 }
 
 // overload operator =
+kDTreeNode *kDTree::copy(kDTreeNode *node)
+{
+    if (node == nullptr)
+    {
+        return nullptr;
+    }
+    kDTreeNode *newNode = new kDTreeNode(*node);
+    newNode->left = copy(node->left);
+    newNode->right = copy(node->right);
+    return newNode;
+}
+
 const kDTree &kDTree::operator=(const kDTree &other)
 {
-    if (this == &other)
+    if (this != &other)
     {
-        return *this;
+        clear(root); // delete current tree
+        k = other.k;
+        root = copy(other.root); // create a deep copy of other's tree
     }
-    clear(root);
-    k = other.k;
-    root = other.root;
     return *this;
 }
+
 // copy constructor
 kDTree::kDTree(const kDTree &other)
 {
@@ -553,6 +565,10 @@ void Heap<T>::push(T item)
     reheapUp(heap.size() - 1);
 }
 
+void kDTree::kNearestNeighbour(const vector<int> &target, int k, vector<kDTreeNode *> &bestList)
+{
+}
+
 void kNN::fit(Dataset &X_train, Dataset &y_train)
 {
     this->X_train = &X_train;
@@ -578,4 +594,31 @@ void kNN::fit(Dataset &X_train, Dataset &y_train)
     }
     tree = new kDTree(this->k);
     tree->buildTree(points);
+}
+
+double kNN::score(const Dataset &y_test, const Dataset &y_pred)
+{
+    int y_test_rows;
+    int y_test_cols;
+    y_test.getShape(y_test_rows, y_test_cols);
+    int y_pred_rows;
+    int y_pred_cols;
+    y_pred.getShape(y_pred_rows, y_pred_cols);
+
+    if (y_test_rows != y_pred_rows || y_test_cols != y_pred_cols)
+    {
+        return -1;
+    }
+    double correct = 0;
+    for (auto i : y_test.data)
+    {
+        for (auto j : y_pred.data)
+        {
+            if (i == j)
+            {
+                correct++;
+            }
+        }
+    }
+    return static_cast<double>((correct) / y_test_rows);
 }

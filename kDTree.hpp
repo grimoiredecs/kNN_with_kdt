@@ -48,6 +48,7 @@ public:
     int nodeCount() const;
     int leafCountRec(kDTreeNode *node) const;
     int leafCount() const;
+    kDTreeNode *copy(kDTreeNode *node);
     kDTreeNode *getRoot() const;
     void insert(const vector<int> &point);
     vector<int> successor(const kDTreeNode *node);
