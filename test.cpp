@@ -8,22 +8,23 @@ kDTree::kDTree(int k)
 {
     this->k = k;
     root = nullptr;
-    cnt = 0;
-}
-
-void kDTree::clear(kDTreeNode *node)
-{
-    if (node == nullptr || node == NULL || !node)
-    {
-        return;
-    }
-    clear(node->left);
-    clear(node->right);
-    delete node;
 }
 kDTree::~kDTree()
 {
     clear(root);
+}
+
+void kDTree::clear(kDTreeNode *node)
+{
+    if (node == nullptr)
+    {
+        return;
+    }
+
+    clear(node->left);
+    clear(node->right);
+    delete node;
+    node = nullptr; // Set the pointer to null after deletion (optional)
 }
 
 // overload operator =
@@ -63,11 +64,9 @@ void kDTree::inorderRec(kDTreeNode *node) const
         return;
     }
     inorderRec(node->left);
-    cout << node->data[0];
-
-    for (int i = 1; i < node->data.size() - 1; i++)
+    for (int i = 0; i < node->data.size(); i++)
     {
-        cout << " " << node->data[i];
+        cout << node->data[i] << " ";
     }
     cout << endl;
 
@@ -131,10 +130,7 @@ int kDTree::height() const
 {
     return heightRec(root);
 }
-int kDTree::nodeCount() const
-{
-    return this->cnt;
-}
+
 int kDTree::leafCountRec(kDTreeNode *node) const
 {
     if (node == nullptr || node == NULL || !node)
@@ -157,7 +153,7 @@ void kDTree::insert(const vector<int> &point)
     if (root == nullptr || root == NULL || !root)
     {
         root = new kDTreeNode(point);
-        cnt++;
+
         return;
     }
     kDTreeNode *cur = root;
@@ -169,7 +165,7 @@ void kDTree::insert(const vector<int> &point)
             if (cur->left == nullptr || cur->left == NULL || !cur->left)
             {
                 cur->left = new kDTreeNode(point);
-                cnt++;
+
                 return;
             }
             cur = cur->left;
@@ -179,7 +175,7 @@ void kDTree::insert(const vector<int> &point)
             if (cur->right == nullptr || cur->right == NULL || !cur->right)
             {
                 cur->right = new kDTreeNode(point);
-                cnt++;
+
                 return;
             }
             cur = cur->right;
@@ -199,6 +195,7 @@ kDTreeNode *kDTree::findMin(kDTreeNode *node, int dim, int depth)
 {
     if (node == nullptr)
         return nullptr;
+
     int cd = depth % k;
     if (cd == dim)
     {
@@ -206,12 +203,15 @@ kDTreeNode *kDTree::findMin(kDTreeNode *node, int dim, int depth)
             return node;
         return findMin(node->left, dim, depth + 1);
     }
-    kDTreeNode *left = findMin(node->left, dim, depth++);
-    kDTreeNode *right = findMin(node->right, dim, depth++);
+
+    kDTreeNode *left = findMin(node->left, dim, depth + 1);
+    kDTreeNode *right = findMin(node->right, dim, depth + 1);
     kDTreeNode *min = node;
-    if (min->data[cd] > left->data[cd])
+
+    if (left != nullptr && left->data[cd] < min->data[cd])
         min = left;
-    else if (min->data[cd] > right->data[cd])
+
+    if (right != nullptr && right->data[cd] < min->data[cd])
         min = right;
 
     return min;
@@ -235,15 +235,15 @@ kDTreeNode *kDTree::removeRec(kDTreeNode *node, const vector<int> &point, int de
         {
             kDTreeNode *min = findMin(node->left, cd, depth + 1);
             node->data = min->data;
-            root->right = root->left;
-            root->left = nullptr;
-            root->right = removeRec(root->right, min->data, depth + 1);
+            node->right = node->left;
+            node->left = nullptr;
+            node->right = removeRec(node->right, min->data, depth + 1);
             //   node->right = removeRec(node->left, min->data, depth + 1);
         }
         else
         {
             delete node;
-            cnt--;
+
             return nullptr;
         }
     }
@@ -388,7 +388,7 @@ inline double kDTree::distance(const vector<int> &a, const vector<int> &b)
     {
         res += (a[i] - b[i]) * (a[i] - b[i]);
     }
-    return static_cast<double>(res);
+    return static_cast<double>(sqrt(res));
 }
 // dfs
 
@@ -416,8 +416,8 @@ kDTreeNode *kDTree::nearestNeighborRec(kDTreeNode *node, const vector<int> &quer
         return nullptr;
     }
 
-    double dist = distance(queryPoint, node->data);
-    double diff = queryPoint[depth % k] - node->data[depth % k];
+    double dist = distance(queryPoint, node->data);              // euclid disrance between the query point and the current node
+    double diff = queryPoint[depth % k] - node->data[depth % k]; // intersection level
     kDTreeNode *near = diff <= 0 ? node->left : node->right;
     kDTreeNode *far = diff <= 0 ? node->right : node->left;
 
@@ -427,7 +427,7 @@ kDTreeNode *kDTree::nearestNeighborRec(kDTreeNode *node, const vector<int> &quer
         nearest = node;
     }
 
-    if (abs(diff) < distance(queryPoint, nearest->data))
+    if (abs(diff) <= distance(queryPoint, nearest->data))
     {
         kDTreeNode *temp = nearestNeighborRec(far, queryPoint, depth + 1);
         if (temp != nullptr && distance(queryPoint, temp->data) < distance(queryPoint, nearest->data))
@@ -441,8 +441,16 @@ kDTreeNode *kDTree::nearestNeighborRec(kDTreeNode *node, const vector<int> &quer
 
 void kDTree::nearestNeighbour(const vector<int> &target, kDTreeNode *&best)
 {
-    best = nearestNeighborRec(root, target, 0);
-    cout << "Hello WOrld";
+    kDTreeNode *tmp = nearestNeighborRec(root, target, 0);
+    if (tmp == nullptr)
+    {
+        cout << "The tree is empty." << endl;
+        return;
+    }
+    // Update best with the data from tmp
+    best = new kDTreeNode(*tmp);
+
+    cout << "Hello World";
     return;
 }
 
@@ -455,10 +463,15 @@ int main()
     kDTreeNode *best = nullptr;
     tree.buildTree(points);
     //   tree.inorderTraversal();
-
-    tree.inorderTraversal();
+    //  tree.remove({7, 3});
+    // tree.inorderTraversal();
     tree.nearestNeighbour({9, 3}, best);
+    cout << "The nearest neighbour is: " << best->data[0] << " " << best->data[1] << endl;
+    tree.remove({7, 3});
+    cout << best->data[0] << " " << best->data[1] << endl;
 
-    //  cout << best->data[0] << " " << best->data[1] << endl;
+    delete best;
+    Dataset dataset;
+    dataset.loadFromCSV("mnist.csv");
     return 0;
 }

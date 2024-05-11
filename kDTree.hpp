@@ -26,7 +26,6 @@ class kDTree
 private:
     int k;
     kDTreeNode *root;
-    int cnt;
 
 public:
     kDTree(int k = 2);
@@ -72,7 +71,7 @@ public:
 
 template <class T>
 class Heap
-{
+{ // MinHeap
 protected:
     vector<T> elements;
 
@@ -82,7 +81,7 @@ public:
 
     void push(T item);
     bool isEmpty();
-    bool contains(T item);
+    bool contains(const T &item);
     T peek();
     bool pop();
     int size();

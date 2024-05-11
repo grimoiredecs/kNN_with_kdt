@@ -1,6 +1,4 @@
-#include "main.hpp"
 #include "Dataset.hpp"
-#include "kDTree.hpp"
 
 Dataset::Dataset()
 {
@@ -27,4 +25,48 @@ bool Dataset::loadFromCSV(const char *fileName)
         return true;
     }
     return false;
+}
+Dataset::~Dataset()
+{
+    cout << "Destructor called" << endl;
+}
+
+void Dataset::printHead(int nRows, int nCols) const
+{
+    int i = 0;
+    for (auto row : data)
+    {
+        if (i >= nRows)
+            break;
+        int j = 0;
+        for (auto col : row)
+        {
+            if (j >= nCols)
+                break;
+            cout << col << " ";
+            j++;
+        }
+        cout << endl;
+        i++;
+    }
+}
+
+void Dataset::printTail(int nRows, int nCols) const
+{
+    int i = 0;
+    for (auto it = data.rbegin(); it != data.rend(); it++)
+    {
+        if (i >= nRows)
+            break;
+        int j = 0;
+        for (auto col : *it)
+        {
+            if (j >= nCols)
+                break;
+            cout << col << " ";
+            j++;
+        }
+        cout << endl;
+        i++;
+    }
 }

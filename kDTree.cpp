@@ -6,7 +6,6 @@ kDTree::kDTree(int k)
 {
     this->k = k;
     root = nullptr;
-    cnt = 0;
 }
 void kDTree::clear(kDTreeNode *node)
 {
@@ -136,10 +135,7 @@ int kDTree::height() const
 {
     return heightRec(root);
 }
-int kDTree::nodeCount() const
-{
-    return this->cnt;
-}
+
 int kDTree::leafCountRec(kDTreeNode *node) const
 {
     if (node == nullptr || node == NULL || !node)
@@ -162,7 +158,7 @@ void kDTree::insert(const vector<int> &point)
     if (root == nullptr || root == NULL || !root)
     {
         root = new kDTreeNode(point);
-        cnt++;
+
         return;
     }
     kDTreeNode *cur = root;
@@ -174,7 +170,7 @@ void kDTree::insert(const vector<int> &point)
             if (cur->left == nullptr || cur->left == NULL || !cur->left)
             {
                 cur->left = new kDTreeNode(point);
-                cnt++;
+
                 return;
             }
             cur = cur->left;
@@ -184,7 +180,7 @@ void kDTree::insert(const vector<int> &point)
             if (cur->right == nullptr || cur->right == NULL || !cur->right)
             {
                 cur->right = new kDTreeNode(point);
-                cnt++;
+
                 return;
             }
             cur = cur->right;
@@ -248,7 +244,6 @@ kDTreeNode *kDTree::removeRec(kDTreeNode *node, const vector<int> &point, int de
         else
         {
             delete node;
-            cnt--;
             return nullptr;
         }
     }
@@ -433,146 +428,98 @@ void kDTree::nearestNeighbour(const vector<int> &target, kDTreeNode *&best)
     return;
 }
 
-template <class T>
-Heap<T>::Heap()
-{
-}
-template <class T>
-Heap<T>::~Heap()
-{
-}
-/**/
-template <class T>
-void Heap<T>::push(T item)
-{
-    elements.push_back(item);
-    int i = elements.size() - 1;
-    int parent = (i - 1) / 2;
-    while (i > 0 && elements[parent] < elements[i])
-    {
-        swap(elements[i], elements[parent]);
-        i = parent;
-        parent = (i - 1) / 2;
-    }
-}
-template <class T>
+template <typename T>
 bool Heap<T>::isEmpty()
 {
-    return elements.size() == 0;
+    return heap.size() == 0;
 }
-template <class T>
-int Heap<T>::size()
+
+template <typename T>
+bool Heap<T>::contains(const T &element)
 {
-    return elements.size();
-}
-template <class T>
-bool Heap<T>::contains(T item)
-{
-    for (auto ele : elements)
+    for (int i = 0; i < heap.size(); i++)
     {
-        if (ele == item)
+        if (heap[i] == element)
         {
             return true;
         }
     }
     return false;
 }
-template <class T>
+
+template <typename T>
 T Heap<T>::peek()
 {
-    if (isEmpty())
+    if (heap.size() == 0)
     {
-        return NULL;
+        return nullptr;
     }
-    return elements[0];
+    return heap[0];
 }
-template <class T>
+
+template <typename T>
 bool Heap<T>::pop()
 {
-    if (isEmpty())
+    if (heap.size() == 0)
     {
         return false;
     }
-    swap(elements[0], elements[elements.size() - 1]);
-    elements.pop_back();
-    int i = 0;
-    while (true)
-    {
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
-        int largest = i;
-        if (left < elements.size() && elements[left] > elements[largest])
-        {
-            largest = left;
-        }
-        if (right < elements.size() && elements[right] > elements[largest])
-        {
-            largest = right;
-        }
-        if (largest == i)
-        {
-            break;
-        }
-        swap(elements[i], elements[largest]);
-        i = largest;
-    }
+    heap[0] = heap[heap.size() - 1];
+    heap.pop_back();
+    heapifyDown(0);
     return true;
 }
-// Explicit instantiation
-
-template <class T>
+template <typename T>
+int Heap<T>::size()
+{
+    return heap.size();
+}
+template <typename T>
 void Heap<T>::reheapUp(int position)
 {
     int parent = (position - 1) / 2;
-    while (position > 0 && heap[parent] < heap[position])
+    while (position > 0 && heap[position] < heap[parent])
     {
         swap(heap[position], heap[parent]);
         position = parent;
         parent = (position - 1) / 2;
     }
 }
-
-template <class T>
-void Heap<T>::reheapUp(vector<T> &minHeap, int numberOfElements, int index)
+template <typename T>
+void Heap<T>::push(T element)
 {
-    int parent = (index - 1) / 2;
-    while (index > 0 && minHeap[parent] > minHeap[index])
-    {
-        swap(minHeap[parent], minHeap[index]);
-        index = parent;
-        parent = (index - 1) / 2;
-    }
+    heap.push_back(element);
+    reheapUp(heap.size() - 1);
 }
 
-template <class T>
+template <typename T>
 void Heap<T>::reheapDown(int position)
 {
     int left = 2 * position + 1;
     int right = 2 * position + 2;
-    int largest = position;
-    if (left < heap.size() && heap[left] > heap[largest])
+    int smallest = position;
+    if (left < heap.size() && heap[left] < heap[position])
     {
-        largest = left;
+        smallest = left;
     }
-    if (right < heap.size() && heap[right] > heap[largest])
+    if (right < heap.size() && heap[right] < heap[smallest])
     {
-        largest = right;
+        smallest = right;
     }
-    if (largest == position)
+    if (smallest != position)
     {
-        return;
+        swap(heap[position], heap[smallest]);
+        reheapDown(smallest);
     }
-    swap(heap[position], heap[largest]);
-    reheapDown(largest);
 }
 
-template <class T>
+template <typename T>
 void Heap<T>::reheapDown(vector<T> &minHeap, int numberOfElements, int index)
 {
     int left = 2 * index + 1;
     int right = 2 * index + 2;
     int smallest = index;
-    if (left < numberOfElements && minHeap[left] < minHeap[smallest])
+    if (left < numberOfElements && minHeap[left] < minHeap[index])
     {
         smallest = left;
     }
@@ -580,24 +527,28 @@ void Heap<T>::reheapDown(vector<T> &minHeap, int numberOfElements, int index)
     {
         smallest = right;
     }
-    if (smallest == index)
+    if (smallest != index)
     {
-        return;
+        swap(minHeap[index], minHeap[smallest]);
+        reheapDown(minHeap, numberOfElements, smallest);
     }
-    swap(minHeap[index], minHeap[smallest]);
-    reheapDown(minHeap, numberOfElements, smallest);
 }
 
-kNN::kNN(int k)
+template <typename T>
+void Heap<T>::reheapUp(vector<T> &minHeap, int numberOfElements, int index)
 {
-    this->k = k;
-    this->tree = new kDTree();
-}
-kNN::~kNN()
-{
-    delete tree;
+    int parent = (index - 1) / 2;
+    while (index > 0 && minHeap[index] < minHeap[parent])
+    {
+        swap(minHeap[index], minHeap[parent]);
+        index = parent;
+        parent = (index - 1) / 2;
+    }
 }
 
-void kNN::fit(Dataset &X, Dataset &y)
+template <typename T>
+void Heap<T>::push(T item)
 {
+    heap.push_back(item);
+    reheapUp(heap.size() - 1);
 }
