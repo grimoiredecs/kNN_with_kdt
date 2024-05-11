@@ -20,7 +20,7 @@ public:
     Dataset &operator=(const Dataset &other);
     friend void train_test_split(Dataset &X, Dataset &y, double test_size,
                                  Dataset &X_train, Dataset &X_test, Dataset &y_train, Dataset &y_test);
-    friend class kNN;
+    friend class kNN; // remember this
 };
 
 void train_test_split(Dataset &X, Dataset &y, double test_size,
