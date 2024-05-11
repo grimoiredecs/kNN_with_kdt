@@ -564,18 +564,18 @@ void kNN::fit(Dataset &X_train, Dataset &y_train)
     X_train.getShape(x_rows, x_cols);
     y_train.getShape(y_rows, y_cols);
 
-    this->numClasses = y_train.size();
+    this->numClasses = y_rows;
+
     vector<vector<int>> points;
-    for (int i = 0; i < x_rows; i++)
+    for (auto i : X_train.data)
     {
         vector<int> point;
-        for (int j = 0; j < x_cols; j++)
+        for (auto j : i)
         {
-            point.push_back(X_train.data.at(i).at(j));
+            point.push_back(j);
         }
+        points.push_back(point);
     }
-    points.push_back(point);
-}
-tree = new kDTree(2);
-tree->buildTree(points);
+    tree = new kDTree(this->k);
+    tree->buildTree(points);
 }
