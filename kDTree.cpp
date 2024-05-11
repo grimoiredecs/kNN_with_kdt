@@ -478,18 +478,18 @@ int Heap<T>::size()
 }
 
 template <typename T>
-void reHeapUp(int index)
+void Heap<T>::reheapUp(int position)
 {
-    int parent = (index - 1) / 2;
-    if (index > 0 && this->elements[index] < this->elements[parent])
+    int parent = (position - 1) / 2;
+    if (position > 0 && this->elements[position] < this->elements[parent])
     {
-        swap(this->elements[index], this->elements[parent]);
-        reHeapUp(parent);
+        swap(this->elements[position], this->elements[parent]);
+        reheapUp(parent);
     }
 }
 
 template <typename T>
-void reheapDown(int position)
+void Heap<T>::reheapDown(int position)
 {
     int left = 2 * position + 1;
     int right = 2 * position + 2;
