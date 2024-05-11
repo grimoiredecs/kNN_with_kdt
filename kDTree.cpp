@@ -552,3 +552,22 @@ void Heap<T>::push(T item)
     heap.push_back(item);
     reheapUp(heap.size() - 1);
 }
+
+void kNN::fit(Dataset &X_train, Dataset &y_train)
+{
+    this->X_train = &X_train;
+    this->y_train = &y_train;
+    this->numClasses = y_train.size();
+    vector<vector<int>> points;
+    for (int i = 0; i < X_train.size(); i++)
+    {
+        vector<int> point;
+        for (int j = 0; j < X_train[i].size(); j++)
+        {
+            point.push_back(X_train[i][j]);
+        }
+        points.push_back(point);
+    }
+    tree = new kDTree(2);
+    tree->buildTree(points);
+}
