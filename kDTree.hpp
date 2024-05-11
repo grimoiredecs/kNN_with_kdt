@@ -78,7 +78,9 @@ protected:
 
 public:
     Heap() {}
-    ~Heap() {}
+    ~Heap()
+    {
+    }
 
     void push(T item);
     bool isEmpty();
@@ -86,8 +88,6 @@ public:
     T peek();
     bool pop();
     int size();
-
-private:
     void reheapUp(int position);
     void reheapDown(int position);
     void reheapDown(vector<T> &minHeap, int numberOfElements, int index);

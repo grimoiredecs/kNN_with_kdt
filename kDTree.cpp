@@ -477,6 +477,77 @@ int Heap<T>::size()
     return this->elements.size();
 }
 
+template <typename T>
+void reHeapUp(int index)
+{
+    int parent = (index - 1) / 2;
+    if (index > 0 && this->elements[index] < this->elements[parent])
+    {
+        swap(this->elements[index], this->elements[parent]);
+        reHeapUp(parent);
+    }
+}
+
+template <typename T>
+void reheapDown(int position)
+{
+    int left = 2 * position + 1;
+    int right = 2 * position + 2;
+    int smallest = position;
+    if (left < this->elements.size() && this->elements[left] < this->elements[position])
+    {
+        smallest = left;
+    }
+    if (right < this->elements.size() && this->elements[right] < this->elements[smallest])
+    {
+        smallest = right;
+    }
+    if (smallest != position)
+    {
+        swap(this->elements[position], this->elements[smallest]);
+        reheapDown(smallest);
+    }
+}
+
+template <typename T>
+void Heap<T>::reheapDown(vector<T> &minHeap, int numberOfElements, int index)
+{
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
+    int smallest = index;
+    if (left < numberOfElements && minHeap[left] < minHeap[index])
+    {
+        smallest = left;
+    }
+    if (right < numberOfElements && minHeap[right] < minHeap[smallest])
+    {
+        smallest = right;
+    }
+    if (smallest != index)
+    {
+        swap(minHeap[index], minHeap[smallest]);
+        reheapDown(minHeap, numberOfElements, smallest);
+    }
+}
+
+template <typename T>
+void Heap<T>::reheapUp(vector<T> &minHeap, int numberOfElements, int index)
+{
+    int parent = (index - 1) / 2;
+    if (index > 0 && minHeap[index] < minHeap[parent])
+    {
+        swap(minHeap[index], minHeap[parent]);
+        reheapUp(minHeap, numberOfElements, parent);
+    }
+}
+
+template <typename T>
+void Heap<T>::push(T item)
+{
+    this->elements.push_back(item);
+    reHeapUp(this->elements.size() - 1);
+}
+
 void kDTree::kNearestNeighbour(const vector<int> &target, int k, vector<kDTreeNode *> &bestList)
 {
 }
