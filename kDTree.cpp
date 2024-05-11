@@ -443,15 +443,16 @@ void kDTree::nearestNeighbour(const vector<int> &target, kDTreeNode *&best)
 template <typename T>
 bool Heap<T>::isEmpty()
 {
-    return heap.size() == 0;
+    bool res = this->elements.empty();
+    return res;
 }
 
 template <typename T>
-bool Heap<T>::contains(const T &element)
+bool Heap<T>::contains(const T &item)
 {
-    for (int i = 0; i < heap.size(); i++)
+    for (auto i : this->elements)
     {
-        if (heap[i] == element)
+        if (i == item)
         {
             return true;
         }
@@ -462,107 +463,18 @@ bool Heap<T>::contains(const T &element)
 template <typename T>
 T Heap<T>::peek()
 {
-    if (heap.size() == 0)
+    if (this->isEmpty())
     {
         return nullptr;
     }
-    return heap[0];
+    T ele = this->elements[0];
+    return ele;
 }
 
-template <typename T>
-bool Heap<T>::pop()
-{
-    if (heap.size() == 0)
-    {
-        return false;
-    }
-    heap[0] = heap[heap.size() - 1];
-    heap.pop_back();
-    heapifyDown(0);
-    return true;
-}
 template <typename T>
 int Heap<T>::size()
 {
-    return heap.size();
-}
-template <typename T>
-void Heap<T>::reheapUp(int position)
-{
-    int parent = (position - 1) / 2;
-    while (position > 0 && heap[position] < heap[parent])
-    {
-        swap(heap[position], heap[parent]);
-        position = parent;
-        parent = (position - 1) / 2;
-    }
-}
-template <typename T>
-void Heap<T>::push(T element)
-{
-    heap.push_back(element);
-    reheapUp(heap.size() - 1);
-}
-
-template <typename T>
-void Heap<T>::reheapDown(int position)
-{
-    int left = 2 * position + 1;
-    int right = 2 * position + 2;
-    int smallest = position;
-    if (left < heap.size() && heap[left] < heap[position])
-    {
-        smallest = left;
-    }
-    if (right < heap.size() && heap[right] < heap[smallest])
-    {
-        smallest = right;
-    }
-    if (smallest != position)
-    {
-        swap(heap[position], heap[smallest]);
-        reheapDown(smallest);
-    }
-}
-
-template <typename T>
-void Heap<T>::reheapDown(vector<T> &minHeap, int numberOfElements, int index)
-{
-    int left = 2 * index + 1;
-    int right = 2 * index + 2;
-    int smallest = index;
-    if (left < numberOfElements && minHeap[left] < minHeap[index])
-    {
-        smallest = left;
-    }
-    if (right < numberOfElements && minHeap[right] < minHeap[smallest])
-    {
-        smallest = right;
-    }
-    if (smallest != index)
-    {
-        swap(minHeap[index], minHeap[smallest]);
-        reheapDown(minHeap, numberOfElements, smallest);
-    }
-}
-
-template <typename T>
-void Heap<T>::reheapUp(vector<T> &minHeap, int numberOfElements, int index)
-{
-    int parent = (index - 1) / 2;
-    while (index > 0 && minHeap[index] < minHeap[parent])
-    {
-        swap(minHeap[index], minHeap[parent]);
-        index = parent;
-        parent = (index - 1) / 2;
-    }
-}
-
-template <typename T>
-void Heap<T>::push(T item)
-{
-    heap.push_back(item);
-    reheapUp(heap.size() - 1);
+    return this->elements.size();
 }
 
 void kDTree::kNearestNeighbour(const vector<int> &target, int k, vector<kDTreeNode *> &bestList)
