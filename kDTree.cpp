@@ -73,6 +73,16 @@ inline int kDTree::lvl(kDTreeNode *node)
 {
     return lvlRec(root, node, 0);
 }
+int kDTree::nodeCountRec(kDTreeNode *node) const
+{
+    if (node == nullptr)
+        return 0;
+    return nodeCountRec(node->left) + nodeCountRec(node->right) + 1;
+}
+int kDTree::nodeCount() const
+{
+    return nodeCountRec(root);
+}
 
 void kDTree::inorderRec(kDTreeNode *node) const
 {
@@ -405,13 +415,13 @@ inline double kDTree::distance(const vector<int> &a, const vector<int> &b)
 // dfs
 
 kDTreeNode *kDTree::nearestNeighborRec(kDTreeNode *node, const vector<int> &queryPoint, int depth)
-{
+{ // depth == k
     if (node == nullptr)
     {
         return nullptr;
     }
 
-    double dist = distance(queryPoint, node->data);
+    double dist = distance(queryPoint, node->data); // calcualte distance saved later when we traversed up
     double diff = queryPoint[depth % k] - node->data[depth % k];
     kDTreeNode *near = diff <= 0 ? node->left : node->right;
     kDTreeNode *far = diff <= 0 ? node->right : node->left;
@@ -550,8 +560,22 @@ void Heap<T>::push(T item)
 
 void kDTree::kNearestNeighbour(const vector<int> &target, int k, vector<kDTreeNode *> &bestList)
 {
+    kDTree tem(*this);
+    kDTreeNode *node = new kDTreeNode(target);
+    kDTreeNode *delNode = new kDTreeNode(target);
+    int len = min(k, this->nodeCount());
+    vector<kDTreeNode *> list;
+    for (int i = 0; i < len; i++)
+    {
+        tem.nearestNeighbour(target, delNode);
+        this->nearestNeighbour(delNode->data, node);
+        vector<int> label = {node->data[784]};
+        kDTreeNode *element = new kDTreeNode(label);
+        list.push_back(element);
+        tem.remove(delNode->data);
+    }
+    bestList = list;
 }
-
 void kNN::fit(Dataset &X_train, Dataset &y_train)
 {
     this->X_train = &X_train;

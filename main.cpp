@@ -1,5 +1,5 @@
 #include "kDTree.hpp"
-/*
+
 void tc1()
 {
     Dataset dataset;
@@ -12,7 +12,7 @@ void tc1()
     dataset.getShape(nRows, nCols);
     std::cout << "Shape: " << nRows << "x" << nCols << endl;
 }
-
+/*
 void tc2()
 {
     Dataset dataset;
@@ -90,10 +90,27 @@ void tc5()
     std::cout << "Accuracy: " << accuracy << endl;
 }
 */
+void tc5()
+{
 
+    Dataset dataset;
+    dataset.loadFromCSV("mnist.csv");
+    int nRows, nCols;
+
+    kNN knn;
+    Dataset X_train, X_test, y_train, y_test;
+    Dataset feature = dataset.extract(0, -1, 1, -1);
+    Dataset label = dataset.extract(0, -1, 0, 0);
+
+    train_test_split(feature, label, 0.2, X_train, X_test, y_train, y_test);
+    knn.fit(X_train, y_train);
+    Dataset y_pred = knn.predict(X_test);
+    double accuracy = knn.score(y_test, y_pred);
+    std::cout << "Accuracy: " << accuracy << endl;
+}
 int main(int argc, const char *argv[])
 {
-    // tc1();
+    tc5();
     cout << "tc1 passed\n";
 
     return 0;

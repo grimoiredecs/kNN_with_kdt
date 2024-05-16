@@ -4,6 +4,29 @@
  *       in this assignment. The below structures are just some suggestions.
  */
 
+template <class T>
+class Heap
+{ // MinHeap
+protected:
+    vector<T> elements;
+
+public:
+    Heap() {}
+    ~Heap()
+    {
+    }
+
+    void push(T item);
+    bool isEmpty();
+    bool contains(const T &item);
+    T peek();
+    bool pop();
+    int size();
+    void reheapUp(int position);
+    void reheapDown(int position);
+    void reheapDown(vector<T> &minHeap, int numberOfElements, int index);
+    void reheapUp(vector<T> &minHeap, int numberOfElements, int index);
+};
 struct kDTreeNode
 {
     vector<int> data;
@@ -18,6 +41,16 @@ struct kDTreeNode
         }
         this->left = left;
         this->right = right;
+    }
+    friend ostream &operator<<(ostream &os, const kDTreeNode &node)
+    {
+        os << "(";
+        for (auto ch : node.data)
+        {
+            os << ch << " ";
+        }
+        os << endl;
+        return os;
     }
 };
 
@@ -70,29 +103,6 @@ public:
     kDTreeNode *nearestNeighborRec(kDTreeNode *root, const vector<int> &queryPoint, int depth);
 };
 
-template <class T>
-class Heap
-{ // MinHeap
-protected:
-    vector<T> elements;
-
-public:
-    Heap() {}
-    ~Heap()
-    {
-    }
-
-    void push(T item);
-    bool isEmpty();
-    bool contains(const T &item);
-    T peek();
-    bool pop();
-    int size();
-    void reheapUp(int position);
-    void reheapDown(int position);
-    void reheapDown(vector<T> &minHeap, int numberOfElements, int index);
-    void reheapUp(vector<T> &minHeap, int numberOfElements, int index);
-};
 class kNN
 {
 private:
